@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(45deg, #1a73e8, #9b59b6);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+    }
+    .form-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+      width: 320px;
+      text-align: center;
+    }
+    .form-container h2 {
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+    .form-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    .form-container input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin: 10px 0;
+      background: #1a73e8;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .form-container button:hover {
+      background: #1669c1;
+    }
+    .form-container a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+    .form-container a:hover {
+      text-decoration: underline;
+    }
+    .error {
+      color: #ff4d4d;
+      font-size: 0.8em;
+      text-align: left;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container" id="registrationSection">
+    <h2>Register</h2>
+    <form id="registrationForm">
+      <input type="text" id="username" placeholder="Username">
+      <div class="error" id="usernameError"></div>
+      
+      <input type="email" id="email" placeholder="Email">
+      <div class="error" id="emailError"></div>
+      
+      <input type="password" id="password" placeholder="Password">
+      <div class="error" id="passwordError"></div>
+      
+      <input type="password" id="confirmPassword" placeholder="Confirm Password">
+      <div class="error" id="confirmPasswordError"></div>
+      
+      <button type="submit">Register</button>
+    </form>
+    <a href="#" id="gotoLogin">Already have an account? Login</a>
+  </div>
+
+  <div class="form-container hidden" id="loginSection">
+    <h2>Sign In</h2>
+    <form id="loginForm">
+      <input type="text" id="loginUsername" placeholder="Username or Email">
+      <div class="error" id="loginError"></div>
+      <input type="password" id="loginPassword" placeholder="Password">
+      <div class="captcha">
+        <p id="captchaDisplay">Solve: <span id="captchaQuestion"></span></p>
+        <input type="text" id="captchaInput" placeholder="Enter your answer">
+      </div>
+      <div class="error" id="captchaError"></div>
+      <button type="submit">Sign In</button>
+    </form>
+    <a href="#" id="gotoForgotPassword">Forgot Password?</a> | <a href="#" id="gotoRegister">Register</a>
+  </div>
+
+  <div class="form-container hidden" id="forgotPasswordSection">
+    <h2>Forgot Password</h2>
+    <form id="forgotPasswordForm">
+      <input type="email" id="forgotEmail" placeholder="Enter your email">
+      <button type="submit">Reset Password</button>
+    </form>
+    <a href="#" id="gotoLoginFromForgot">Back to Login</a>
+  </div>
+
+  <script>
+    // Get references to all sections and links
+    const registrationSection = document.getElementById('registrationSection');
+    const loginSection = document.getElementById('loginSection');
+    const forgotPasswordSection = document.getElementById('forgotPasswordSection');
+
+    const gotoLogin = document.getElementById('gotoLogin');
+    const gotoRegister = document.getElementById('gotoRegister');
+    const gotoForgotPassword = document.getElementById('gotoForgotPassword');
+    const gotoLoginFromForgot = document.getElementById('gotoLoginFromForgot');
+
+    // Navigation functionality
+    gotoLogin.addEventListener('click', () => {
+      registrationSection.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+    });
+
+    gotoRegister.addEventListener('click', () => {
+      loginSection.classList.add('hidden');
+      registrationSection.classList.remove('hidden');
+    });
+
+    gotoForgotPassword.addEventListener('click', () => {
+      loginSection.classList.add('hidden');
+      forgotPasswordSection.classList.remove('hidden');
+    });
+
+    gotoLoginFromForgot.addEventListener('click', () => {
+      forgotPasswordSection.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+    });
+
+    // Registration validation
+    document.getElementById('registrationForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+      if (!username || !email || !password || !confirmPassword) {
+        alert('All fields are required.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      alert('Registration successful!');
+      registrationSection.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+    });
+
+    // CAPTCHA generation and validation
+    const generateCaptcha = () => {
+      const num1 = Math.floor(Math.random() * 10) + 1;
+      const num2 = Math.floor(Math.random() * 10) + 1;
+      const operation = ['+', '-', '*'][Math.floor(Math.random() * 3)];
+      const question = `${num1} ${operation} ${num2}`;
+      const answer = eval(question);
+      document.getElementById('captchaQuestion').innerText = question;
+      return answer;
+    };
+
+    let currentCaptchaAnswer = generateCaptcha();
+
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const captchaInput = parseInt(document.getElementById('captchaInput').value.trim(), 10);
+
+      if (captchaInput !== currentCaptchaAnswer) {
+        document.getElementById('captchaError').innerText = 'Incorrect CAPTCHA! Please try again.';
+        currentCaptchaAnswer = generateCaptcha(); // Regenerate CAPTCHA
+        return;
+      }
+
+      document.getElementById('captchaError').innerText = ''; // Clear errors
+      alert('Login successful!');
+    });
+  </script>
+</body>
+</html>
